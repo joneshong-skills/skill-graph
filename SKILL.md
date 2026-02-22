@@ -42,7 +42,7 @@ explorer (Haiku, maxTurns=10, tools: Read, Grep, Glob)
 
 Run the scanner to generate a fresh JSON graph.
 
-**Non-functional (sandbox path blocked) — use Bash instead**:
+**Preferred (Sandbox)**:
 ```python
 # sandbox_execute
 import sys
@@ -282,10 +282,13 @@ into 2 sub-agents (top 5 hubs each) for faster processing.
 
 ## Sandbox Optimization
 
-This skill **cannot use sandbox** for its primary operations (`~/.claude/` path is outside sandbox whitelist `~/Claude/` + `/tmp/`). Use `Bash` to run scripts:
+This skill is **sandbox-optimized**. Batch operations run inside `sandbox_execute`:
 
-- **Skill inventory scan**: Run via Bash: `python3 ~/.claude/skills/skill-graph/scripts/scan_skills.py` — build the full graph JSON without spawning a separate process
-- **Graph JSON generation**: Run via Bash so the JSON is saved to file, then Read the result
+- **Skill inventory scan**: Import `scripts/scan_skills.py` in sandbox to build the full graph JSON in one deterministic pass
+- **Graph JSON generation**: Import `scripts/` in sandbox so JSON is generated and saved to `~/Claude/` without spawning a separate process
+
+Fallback (Bash):
+- `python3 ~/.claude/skills/skill-graph/scripts/scan_skills.py --json` — build graph via Bash when sandbox is unavailable
 
 Principle: **Deterministic batch work → sandbox; reasoning/presentation → LLM.**
 
