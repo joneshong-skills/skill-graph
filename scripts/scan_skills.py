@@ -93,7 +93,7 @@ PIPELINE_PAIRS = {
     ("meeting-insights", "doc-coauthoring"): "Insights extracts patterns → Doc records",
     ("meeting-insights", "pptx"): "Insights from meetings → Slides for presentation",
     ("notebookllm-mentor", "notebook-bridge"): "Mentor guides usage → Bridge automates",
-    ("notebook-bridge", "notebooklm-visual"): "Bridge uploads data → Visual generates",
+    ("notebook-bridge", "notebookllm-visual"): "Bridge uploads data → Visual generates",
 }
 
 ENHANCEMENT_PAIRS = {
@@ -138,7 +138,7 @@ COMPOSITION_COMBOS = {
         "Multi-CLI Arsenal",
         "Three headless CLIs ready for maestro orchestration",
     ),
-    frozenset(["notebookllm-mentor", "notebook-bridge", "notebooklm-visual"]): (
+    frozenset(["notebookllm-mentor", "notebook-bridge", "notebookllm-visual"]): (
         "NotebookLM Suite",
         "Learn → automate → generate visual content",
     ),
