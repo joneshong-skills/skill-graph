@@ -8,8 +8,8 @@ description: >-
   mentions skill collaboration discovery, or discusses mapping skill
   relationships, finding creative skill combinations, or visualizing
   the skill network.
-version: 0.1.0
-tools: Read, Bash, Task, Glob, Grep
+version: 0.2.0
+tools: Read, Bash, Task, Glob, Grep, sandbox_execute
 ---
 
 # Skill Graph
@@ -17,6 +17,14 @@ tools: Read, Bash, Task, Glob, Grep
 Map the installed skill inventory as a knowledge graph. Discover pipelines,
 synergies, and emergent compositions. Output actionable recommendations and
 a visual network diagram. Uses parallel sub-agents for creative analysis.
+
+## Agent Delegation
+
+Delegate dependency data extraction to `explorer` agent, visualization to `designer` agent.
+
+```
+explorer (Haiku, maxTurns=10, tools: Read, Grep, Glob)
+```
 
 ## Core Principles
 
@@ -32,8 +40,19 @@ a visual network diagram. Uses parallel sub-agents for creative analysis.
 
 ### Step 1: Scan — Build the Graph
 
-Run the scanner to generate a fresh JSON graph:
+Run the scanner to generate a fresh JSON graph.
 
+**Preferred (Sandbox)**:
+```python
+# sandbox_execute
+import sys
+sys.path.insert(0, "/Users/joneshong/.claude/skills/skill-graph/scripts")
+import scan_skills
+graph_json = scan_skills.main(json_output=True)
+output(graph_json)
+```
+
+**Fallback (Bash)**:
 ```bash
 GRAPH_JSON=$(python3 ~/.claude/skills/skill-graph/scripts/scan_skills.py --json)
 ```
@@ -243,7 +262,7 @@ Format output as a structured report:
 | Skill Lifecycle | create-skill + skill-optimizer + skill-curator + skill-publisher | Build → polish → organize → ship |
 | Design System | brand-guidelines + theme-factory + frontend-design | Identity → tokens → code |
 | Office Suite | pdf + docx + pptx + xlsx | Complete business document coverage |
-| NotebookLM Suite | notebookllm-mentor + notebook-bridge + notebooklm-visual | Learn → automate → generate |
+| NotebookLM Suite | notebookllm-mentor + notebook-bridge + notebookllm-visual | Learn → automate → generate |
 | Multi-CLI Arsenal | claude-code-headless + codex-headless + gemini-cli-headless | Three engines for maestro |
 | Intelligence Advisor | model-mentor + smart-search | Latest info + optimal tool recommendation |
 | Meeting-to-Deck | meeting-insights + content-writer + pptx | Analyze → write → present |
@@ -260,6 +279,15 @@ Step 3:  Synthesize in main context (no sub-agent needed)
 Use `subagent_type: "general-purpose"` for all three agents.
 For large skill inventories (40+), consider splitting Agent A's work
 into 2 sub-agents (top 5 hubs each) for faster processing.
+
+## Sandbox Optimization
+
+This skill is **sandbox-optimized**. Batch operations run inside `sandbox_execute`:
+
+- **Skill inventory scan**: Import `scripts/scan_skills.py` in sandbox to build the full graph JSON without spawning a separate process
+- **Graph JSON generation**: Run in sandbox so the JSON is returned directly, avoiding shell output buffering issues with large inventories
+
+Principle: **Deterministic batch work → sandbox; reasoning/presentation → LLM.**
 
 ## Continuous Improvement
 
