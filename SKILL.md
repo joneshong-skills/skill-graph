@@ -42,7 +42,7 @@ explorer (Haiku, maxTurns=10, tools: Read, Grep, Glob)
 
 Run the scanner to generate a fresh JSON graph.
 
-**Preferred (Sandbox)**:
+**Non-functional (sandbox path blocked) — use Bash instead**:
 ```python
 # sandbox_execute
 import sys
@@ -282,12 +282,17 @@ into 2 sub-agents (top 5 hubs each) for faster processing.
 
 ## Sandbox Optimization
 
-This skill is **sandbox-optimized**. Batch operations run inside `sandbox_execute`:
+This skill **cannot use sandbox** for its primary operations (`~/.claude/` path is outside sandbox whitelist `~/Claude/` + `/tmp/`). Use `Bash` to run scripts:
 
-- **Skill inventory scan**: Import `scripts/scan_skills.py` in sandbox to build the full graph JSON without spawning a separate process
-- **Graph JSON generation**: Run in sandbox so the JSON is returned directly, avoiding shell output buffering issues with large inventories
+- **Skill inventory scan**: Run via Bash: `python3 ~/.claude/skills/skill-graph/scripts/scan_skills.py` — build the full graph JSON without spawning a separate process
+- **Graph JSON generation**: Run via Bash so the JSON is saved to file, then Read the result
 
 Principle: **Deterministic batch work → sandbox; reasoning/presentation → LLM.**
+
+
+## Integration
+
+- **synergy-weaver** — Visualize the connections that synergy-weaver creates
 
 ## Continuous Improvement
 
