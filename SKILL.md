@@ -262,7 +262,7 @@ Format output as a structured report:
 | Skill Lifecycle | create-skill + skill-optimizer + skill-curator + skill-publisher | Build → polish → organize → ship |
 | Design System | brand-guidelines + theme-factory + frontend-design | Identity → tokens → code |
 | Office Suite | pdf + docx + pptx + xlsx | Complete business document coverage |
-| NotebookLM Suite | notebookllm-mentor + notebook-bridge + notebookllm-visual | Learn → automate → generate |
+| NotebookLM Suite | notebookllm + notebook-bridge + notebookllm-visual | Learn → automate → generate |
 | Multi-CLI Arsenal | claude-code-headless + codex-headless + gemini-cli-headless | Three engines for maestro |
 | Intelligence Advisor | model-mentor + smart-search | Latest info + optimal tool recommendation |
 | Meeting-to-Deck | meeting-insights + content-writer + pptx | Analyze → write → present |
