@@ -12,54 +12,143 @@ import json
 import os
 import re
 import sys
-from pathlib import Path
 from collections import defaultdict
+from pathlib import Path
 
 DEFAULT_SKILLS_DIR = os.path.expanduser("~/.claude/skills")
+
+# Import cold-skill description fallback
+sys.path.insert(0, os.path.expanduser("~/.claude/data/skill-index"))
+try:
+    from resolve_description import resolve_from_frontmatter
+except ImportError:
+
+    def resolve_from_frontmatter(fm, name):
+        return fm.get("description", "")
+
 
 # ── Domain classification keywords ──────────────────────────────────────────
 DOMAIN_KEYWORDS = {
     "content-creation": [
-        "write", "draft", "article", "blog", "copy", "content", "newsletter",
-        "marketing", "email", "ad copy", "social media",
+        "write",
+        "draft",
+        "article",
+        "blog",
+        "copy",
+        "content",
+        "newsletter",
+        "marketing",
+        "email",
+        "ad copy",
+        "social media",
     ],
     "document-output": [
-        "pdf", "docx", "pptx", "xlsx", "word", "excel", "powerpoint",
-        "spreadsheet", "presentation", "slides", "document",
+        "pdf",
+        "docx",
+        "pptx",
+        "xlsx",
+        "word",
+        "excel",
+        "powerpoint",
+        "spreadsheet",
+        "presentation",
+        "slides",
+        "document",
     ],
     "visual-design": [
-        "diagram", "canvas", "poster", "visual", "design", "ui",
-        "ux", "frontend", "landing page", "theme", "brand", "color",
+        "diagram",
+        "canvas",
+        "poster",
+        "visual",
+        "design",
+        "ui",
+        "ux",
+        "frontend",
+        "landing page",
+        "theme",
+        "brand",
+        "color",
     ],
     "image-gen": [
-        "image generation", "text-to-image", "ai art", "generate image",
-        "image prompt", "midjourney", "dall-e", "flux", "stable diffusion",
-        "grok image", "gemini image",
+        "image generation",
+        "text-to-image",
+        "ai art",
+        "generate image",
+        "image prompt",
+        "midjourney",
+        "dall-e",
+        "flux",
+        "stable diffusion",
+        "grok image",
+        "gemini image",
     ],
     "dev-tooling": [
-        "headless", "cli", "codex", "gemini", "claude", "mcp", "server",
-        "script", "pipeline", "ci/cd", "sdk",
+        "headless",
+        "cli",
+        "codex",
+        "gemini",
+        "claude",
+        "mcp",
+        "server",
+        "script",
+        "pipeline",
+        "ci/cd",
+        "sdk",
     ],
     "orchestration": [
-        "orchestrate", "dispatch", "agent", "multi-agent", "parallel",
-        "pipeline", "coordinate", "team", "task", "dag",
+        "orchestrate",
+        "dispatch",
+        "agent",
+        "multi-agent",
+        "parallel",
+        "pipeline",
+        "coordinate",
+        "team",
+        "task",
+        "dag",
     ],
     "knowledge-mgmt": [
-        "notebooklm", "notebook", "research", "search", "documentation",
-        "wiki", "audio overview", "source",
+        "notebooklm",
+        "notebook",
+        "research",
+        "search",
+        "documentation",
+        "wiki",
+        "audio overview",
+        "source",
     ],
     "skill-meta": [
-        "lifecycle", "curator", "publisher", "catalog", "optimizer",
-        "optimize", "publish", "curate", "organize",
-        "merge", "readme", "spec",
+        "lifecycle",
+        "curator",
+        "publisher",
+        "catalog",
+        "optimizer",
+        "optimize",
+        "publish",
+        "curate",
+        "organize",
+        "merge",
+        "readme",
+        "spec",
     ],
     "analysis": [
-        "analyze", "competitor", "meeting", "insights", "audit",
-        "communication", "comparison", "review",
+        "analyze",
+        "competitor",
+        "meeting",
+        "insights",
+        "audit",
+        "communication",
+        "comparison",
+        "review",
     ],
     "ideation": [
-        "brainstorm", "ideation", "explore", "decide", "approach",
-        "model", "recommend",
+        "brainstorm",
+        "ideation",
+        "explore",
+        "decide",
+        "approach",
+        "model",
+        "recommend",
     ],
 }
 
@@ -67,11 +156,14 @@ DOMAIN_KEYWORDS = {
 # Each rule: (condition_fn, edge_type, description_template)
 # condition_fn(a, b) -> bool, where a/b are skill metadata dicts
 
+
 def _shares_tool(a, b, tool):
     return tool in a.get("tools", []) and tool in b.get("tools", [])
 
+
 def _in_domain(skill, domain):
     return domain in skill.get("domains", [])
+
 
 PIPELINE_PAIRS = {
     # (upstream, downstream): description
@@ -240,7 +332,7 @@ def build_graph(skills_dir: str) -> dict:
 
         fm = parse_frontmatter(d)
         name = fm.get("name", d.name)
-        description = fm.get("description", "")
+        description = resolve_from_frontmatter(fm, d.name)
         tools = [t.strip() for t in fm.get("tools", "").split(",") if t.strip()]
         version = fm.get("version", "")
         domains = classify_domains(description)
@@ -276,57 +368,63 @@ def build_graph(skills_dir: str) -> dict:
     # 1. Pipeline edges (known pairs)
     for (up, down), desc in PIPELINE_PAIRS.items():
         if up in skill_names and down in skill_names:
-            edges.append({
-                "source": up,
-                "target": down,
-                "type": "pipeline",
-                "description": desc,
-                "strength": 0.8,
-            })
+            edges.append(
+                {
+                    "source": up,
+                    "target": down,
+                    "type": "pipeline",
+                    "description": desc,
+                    "strength": 0.8,
+                }
+            )
 
     # 2. Enhancement edges
     for (enhancer, enhanced), desc in ENHANCEMENT_PAIRS.items():
         if enhancer in skill_names and enhanced in skill_names:
-            edges.append({
-                "source": enhancer,
-                "target": enhanced,
-                "type": "enhancement",
-                "description": desc,
-                "strength": 0.7,
-            })
+            edges.append(
+                {
+                    "source": enhancer,
+                    "target": enhanced,
+                    "type": "enhancement",
+                    "description": desc,
+                    "strength": 0.7,
+                }
+            )
 
     # 3. Domain overlap edges (auto-discovered)
     names_list = sorted(skill_names)
     for i, a in enumerate(names_list):
-        for b in names_list[i + 1:]:
-            overlap = compute_domain_overlap(
-                skill_map[a]["domains"], skill_map[b]["domains"]
-            )
+        for b in names_list[i + 1 :]:
+            overlap = compute_domain_overlap(skill_map[a]["domains"], skill_map[b]["domains"])
             if overlap >= 0.5:
                 # Check it's not already covered by pipeline/enhancement
                 existing = {(e["source"], e["target"]) for e in edges}
                 existing |= {(e["target"], e["source"]) for e in edges}
                 if (a, b) not in existing:
-                    edges.append({
-                        "source": a,
-                        "target": b,
-                        "type": "shares-domain",
-                        "description": f"Shared domains: {set(skill_map[a]['domains']) & set(skill_map[b]['domains'])}",
-                        "strength": round(overlap, 2),
-                    })
+                    edges.append(
+                        {
+                            "source": a,
+                            "target": b,
+                            "type": "shares-domain",
+                            "description": f"Shared domains: {set(skill_map[a]['domains']) & set(skill_map[b]['domains'])}",
+                            "strength": round(overlap, 2),
+                        }
+                    )
 
     # ── Build compositions ───────────────────────────────────────────────
     compositions = []
     for combo_set, (name, desc) in COMPOSITION_COMBOS.items():
         present = combo_set & skill_names
         if len(present) >= 2:  # At least 2 of the combo skills exist
-            compositions.append({
-                "name": name,
-                "skills": sorted(present),
-                "missing": sorted(combo_set - skill_names),
-                "description": desc,
-                "completeness": round(len(present) / len(combo_set), 2),
-            })
+            compositions.append(
+                {
+                    "name": name,
+                    "skills": sorted(present),
+                    "missing": sorted(combo_set - skill_names),
+                    "description": desc,
+                    "completeness": round(len(present) / len(combo_set), 2),
+                }
+            )
 
     # ── Compute graph stats ──────────────────────────────────────────────
     degree = defaultdict(int)
@@ -377,7 +475,11 @@ def main():
 
     graph = build_graph(args.skills_dir)
 
-    output = json.dumps(graph, indent=2, ensure_ascii=False) if args.json else json.dumps(graph, ensure_ascii=False)
+    output = (
+        json.dumps(graph, indent=2, ensure_ascii=False)
+        if args.json
+        else json.dumps(graph, ensure_ascii=False)
+    )
 
     if args.output:
         Path(args.output).write_text(output, encoding="utf-8")
