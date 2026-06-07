@@ -1,13 +1,6 @@
 ---
 name: skill-graph
-description: >-
-  This skill should be used when the user asks to "show skill synergies",
-  "skill graph", "which skills work together", "skill combinations",
-  "技能圖譜", "skill 協作", "哪些 skill 可以搭配", "skill 知識圖譜",
-  "recommend a skill combo", "what can my skills do together",
-  mentions skill collaboration discovery, or discusses mapping skill
-  relationships, finding creative skill combinations, or visualizing
-  the skill network.
+description: "graph, show, synergies, skills, work, together, combinations, 技能圖譜, skill 協作, 哪些 skill 可以搭配, skill 知識圖譜"
 version: 0.2.0
 tools: Read, Bash, Task, Glob, Grep, sandbox_execute
 ---
@@ -54,7 +47,7 @@ output(graph_json)
 
 **Fallback (Bash)**:
 ```bash
-GRAPH_JSON=$(python3 ~/.claude/skills/skill-graph/scripts/scan_skills.py --json)
+GRAPH_JSON=$(~/.local/bin/python3 ~/.claude/skills/skill-graph/scripts/scan_skills.py --json)
 ```
 
 The script outputs:
@@ -263,7 +256,7 @@ Format output as a structured report:
 | Design System | brand-guidelines + theme-factory + frontend-design | Identity → tokens → code |
 | Office Suite | pdf + docx + pptx + xlsx | Complete business document coverage |
 | NotebookLM Suite | notebookllm + notebook-bridge + notebookllm-visual | Learn → automate → generate |
-| Multi-CLI Arsenal | claude-code-headless + codex-headless + gemini-cli-headless | Three engines for maestro |
+| Multi-CLI Arsenal | claude-code-headless + codex-headless + antigravity-cli-headless | Three engines for maestro |
 | Intelligence Advisor | model-mentor + smart-search | Latest info + optimal tool recommendation |
 | Meeting-to-Deck | meeting-insights + content-writer + pptx | Analyze → write → present |
 
@@ -285,10 +278,10 @@ into 2 sub-agents (top 5 hubs each) for faster processing.
 This skill is **sandbox-optimized**. Batch operations run inside `sandbox_execute`:
 
 - **Skill inventory scan**: Import `scripts/scan_skills.py` in sandbox to build the full graph JSON in one deterministic pass
-- **Graph JSON generation**: Import `scripts/` in sandbox so JSON is generated and saved to `~/Claude/` without spawning a separate process
+- **Graph JSON generation**: Import `scripts/` in sandbox so JSON is generated and saved to `~/workshop/outputs/` without spawning a separate process
 
 Fallback (Bash):
-- `python3 ~/.claude/skills/skill-graph/scripts/scan_skills.py --json` — build graph via Bash when sandbox is unavailable
+- `~/.local/bin/python3 ~/.claude/skills/skill-graph/scripts/scan_skills.py --json` — build graph via Bash when sandbox is unavailable
 
 Principle: **Deterministic batch work → sandbox; reasoning/presentation → LLM.**
 
@@ -324,4 +317,4 @@ Accumulated lessons signal when to run `/skill-optimizer` for a deeper structura
 
 ### Scripts
 - **`scripts/scan_skills.py`** — Scan all skills and build graph JSON.
-  Usage: `python3 scan_skills.py [--skills-dir DIR] [--output FILE] [--json]`
+  Usage: `~/.local/bin/python3 scan_skills.py [--skills-dir DIR] [--output FILE] [--json]`

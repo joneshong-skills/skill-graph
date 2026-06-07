@@ -86,7 +86,7 @@ DOMAIN_KEYWORDS = {
         "headless",
         "cli",
         "codex",
-        "gemini",
+        "agy",
         "claude",
         "mcp",
         "server",
@@ -226,7 +226,7 @@ COMPOSITION_COMBOS = {
         "Meeting-to-Deck Pipeline",
         "Analyze meeting → write insights → produce presentation",
     ),
-    frozenset(["claude-code-headless", "codex-headless", "gemini-cli-headless"]): (
+    frozenset(["claude-code-headless", "codex-cli-headless", "antigravity-cli-headless"]): (
         "Multi-CLI Arsenal",
         "Three headless CLIs ready for maestro orchestration",
     ),
