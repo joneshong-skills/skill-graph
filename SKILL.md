@@ -39,7 +39,8 @@ Run the scanner to generate a fresh JSON graph.
 ```python
 # sandbox_execute
 import sys
-sys.path.insert(0, "/Users/joneshong/.claude/skills/skill-graph/scripts")
+import os
+sys.path.insert(0, os.path.expanduser("~/.claude/skills/skill-graph/scripts"))
 import scan_skills
 graph_json = scan_skills.main(json_output=True)
 output(graph_json)
