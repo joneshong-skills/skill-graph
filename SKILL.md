@@ -3,6 +3,7 @@ name: skill-graph
 description: "graph, show, synergies, skills, work, together, combinations, 技能圖譜, skill 協作, 哪些 skill 可以搭配, skill 知識圖譜"
 version: 0.2.0
 tools: Read, Bash, Task, Glob, Grep, sandbox_execute
+disable-model-invocation: true
 ---
 
 # Skill Graph
