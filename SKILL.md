@@ -279,7 +279,7 @@ into 2 sub-agents (top 5 hubs each) for faster processing.
 This skill is **sandbox-optimized**. Batch operations run inside `sandbox_execute`:
 
 - **Skill inventory scan**: Import `scripts/scan_skills.py` in sandbox to build the full graph JSON in one deterministic pass
-- **Graph JSON generation**: Import `scripts/` in sandbox so JSON is generated and saved to `~/workshop/outputs/` without spawning a separate process
+- **Graph JSON generation**: Import `scripts/` in sandbox so JSON is generated and saved to `~/.claude/outputs/` without spawning a separate process
 
 Fallback (Bash):
 - `~/.local/bin/python3 ~/.claude/skills/skill-graph/scripts/scan_skills.py --json` — build graph via Bash when sandbox is unavailable
